@@ -1,0 +1,26 @@
+.gradle
+/build/
+
+# Ignore Gradle GUI config
+gradle-app.setting
+
+# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
+!gradle-wrapper.jar
+
+# Cache of project
+.gradletasknamecache
+
+# # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
+# gradle/wrapper/gradle-wrapper.properties
+*.xml
+*.xml
+*.xml
+.idea/libraries/Gradle__junit_junit_4_12.xml
+.idea/compiler.xml
+*.iml
+*.iml
+.idea/.name
+.idea/modules/messageframework_main.iml
+.idea/modules/messageframework_test.iml
+*.class
+.idea/modules/messageframework_test.iml
