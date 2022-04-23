@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager
 import utils.ByteBufUtils
 import java.nio.charset.StandardCharsets
 
+// Sharable because it's stateless -- we can re-use the same instance for every message
 @ChannelHandler.Sharable
 object PostgresBackendMessageEncoder : MessageToByteEncoder<BackendMessage>() {
 
