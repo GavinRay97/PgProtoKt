@@ -70,6 +70,14 @@ object ExamplePostgresFrontendMessageHandler : IPostgresFrontendMessageHandler {
 }
 ```
 
+# Demo Video with `psql`
+
+https://user-images.githubusercontent.com/26604994/164947222-26dbbd75-ba2d-4c1b-b893-cf0b2a271554.mp4
+
+# Wireshark Payload
+
 ![Wireshark output of above](./PgProtoKt-example.png)
 
-![Video demo](./PgProtocolKt-example-vid.mp4)
+
+
+
