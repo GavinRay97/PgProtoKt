@@ -732,7 +732,7 @@ class ServerInitializer : ChannelInitializer<SocketChannel>() {
             .addLast(PostgresBackendMessageEncoder)
             .addLast(PostgresFrontendMessageDecoder())
             .addLast(
-                PostgresFrontendMessageHandler(
+                DelegatingPostgresFrontendMessageHandler(
                     ExamplePostgresFrontendMessageHandler
                 )
             )

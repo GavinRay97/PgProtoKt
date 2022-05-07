@@ -3,10 +3,10 @@ import io.netty5.channel.ChannelHandlerContext
 import io.netty5.channel.SimpleChannelInboundHandler
 import org.apache.logging.log4j.LogManager
 
-class PostgresFrontendMessageHandler(private val handler: IPostgresFrontendMessageHandler) :
+class DelegatingPostgresFrontendMessageHandler(private val handler: IPostgresFrontendMessageHandler) :
     SimpleChannelInboundHandler<FrontendMessage>() {
 
-    private val logger = LogManager.getLogger(PostgresFrontendMessageHandler::class.java)
+    private val logger = LogManager.getLogger(DelegatingPostgresFrontendMessageHandler::class.java)
 
     override fun messageReceived(ctx: ChannelHandlerContext, msg: FrontendMessage) {
         logger.debug("Message received: {}", msg)

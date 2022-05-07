@@ -83,42 +83,20 @@ object PostgresBackendMessageEncoder : MessageToByteEncoder<BackendMessage>() {
                 //  Byten
                 //  The value of the column, in the format indicated by the associated format code. n is the above length.
                 val rowBuffer = Unpooled.buffer()
+                // TODO: Currently only handles "TEXT" mode, not "BINARY"
                 msg.columns.forEach {
-                    when (it) {
-                        is String -> {
-                            val writerIndex = rowBuffer.writerIndex()
-                            rowBuffer.writeInt(0)
-                            val bytesWritten = rowBuffer.writeCharSequence(it, StandardCharsets.UTF_8)
-                            rowBuffer.setInt(writerIndex, bytesWritten)
-                        }
-                        is Int -> {
-                            rowBuffer.writeInt(4)
-                            rowBuffer.writeInt(it)
-                        }
-                        is Long -> {
-                            rowBuffer.writeInt(8)
-                            rowBuffer.writeLong(it)
-                        }
-                        is Double -> {
-                            rowBuffer.writeInt(8)
-                            rowBuffer.writeDouble(it)
-                        }
-                        is Float -> {
-                            rowBuffer.writeInt(4)
-                            rowBuffer.writeFloat(it)
-                        }
-                        is ByteArray -> {
-                            rowBuffer.writeInt(it.size)
-                            rowBuffer.writeBytes(it)
-                        }
-                        is Boolean -> {
-                            rowBuffer.writeInt(1)
-                            rowBuffer.writeByte(if (it) 1 else 0)
-                        }
-                        else -> {
-                            throw IllegalArgumentException("Unsupported type: ${it::class.java.simpleName}")
-                        }
+                    val colValueAsString = when (it) {
+                        is String -> it
+                        is Char -> it.toString()
+                        is ByteArray -> it.toString(StandardCharsets.UTF_8)
+                        is Number -> it.toString()
+                        is Boolean -> if (it) "t" else "f"
+                        else -> throw IllegalArgumentException("Unsupported column type: ${it::class.java.name}")
                     }
+                    val writerIndex = rowBuffer.writerIndex()
+                    rowBuffer.writeInt(0)
+                    val bytesWritten = rowBuffer.writeCharSequence(colValueAsString, StandardCharsets.UTF_8)
+                    rowBuffer.setInt(writerIndex, bytesWritten)
                 }
 
                 val rowLength = rowBuffer.readableBytes()

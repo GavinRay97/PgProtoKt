@@ -1,11 +1,13 @@
 import domain.BackendMessage
 import domain.BackendMessage.CommandComplete.CommandType
 import domain.BackendMessage.ReadyForQuery.TransactionStatus
+import domain.BackendMessage.RowDescription.BooleanField
+import domain.BackendMessage.RowDescription.Int4Field
+import domain.BackendMessage.RowDescription.NumericField
+import domain.BackendMessage.RowDescription.TextField
 import domain.FrontendMessage
-import domain.PostgresDataFormat
 import io.netty5.channel.ChannelHandlerContext
 import org.apache.logging.log4j.LogManager
-import utils.PgTypeTable
 
 object ExamplePostgresFrontendMessageHandler : IPostgresFrontendMessageHandler {
     private val logger = LogManager.getLogger(ExamplePostgresFrontendMessageHandler::class.java)
@@ -32,31 +34,22 @@ object ExamplePostgresFrontendMessageHandler : IPostgresFrontendMessageHandler {
         // Fake "user" rows which have "id" and "email" columns
         val rd = BackendMessage.RowDescription(
             fields = listOf(
-                BackendMessage.RowDescription.Field(
-                    name = "id",
-                    tableOid = 0,
-                    columnIdx = 1,
-                    dataTypeOid = PgTypeTable.int4.oid,
-                    dataTypeSize = PgTypeTable.int4.byteLength,
-                    dataTypeModifier = -1,
-                    format = PostgresDataFormat.TEXT
-                ),
-                BackendMessage.RowDescription.Field(
-                    name = "email",
-                    tableOid = 0,
-                    columnIdx = 2,
-                    dataTypeOid = PgTypeTable.text.oid,
-                    dataTypeSize = PgTypeTable.text.byteLength,
-                    dataTypeModifier = -1,
-                    format = PostgresDataFormat.TEXT
-                )
+                Int4Field("id"),
+                TextField("email"),
+                NumericField("some_float"),
+                BooleanField("some_bool")
             )
         )
+
         ctx.write(rd)
 
         // Create 3 rows
         for (i in 1..3) {
-            ctx.write(BackendMessage.DataRow(columns = listOf(i, "user$i@site.com")))
+            ctx.write(
+                BackendMessage.DataRow(
+                    listOf(i, "user$i@site.com", i * 1.23, i % 2 == 0)
+                )
+            )
         }
 
         ctx.write(BackendMessage.CommandComplete(affectedRows = 1, type = CommandType.SELECT))

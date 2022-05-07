@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     java
     kotlin("jvm") version "1.6.20"
+    id("net.bitsandbobs.kradle") version "2.3.1"
 }
 
 repositories {
@@ -25,6 +26,58 @@ version = "1.0.0-SNAPSHOT"
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
+
+
+kradle {
+//    general {
+//        bootstrap.enable()
+//        git.enable()
+//        projectProperties.enable()
+//        buildProperties.enable()
+//    }
+    jvm {
+        kotlin {
+            useCoroutines()
+            lint {
+                ktlint.enable()
+            }
+            test {
+                //useKotest()
+                useMockk()
+            }
+        }
+
+        application {
+            mainClass("Netty5PostgresWireServerKt")
+        }
+
+        //dependencies.enable()
+        //vulnerabilityScan.enable()
+        lint.enable()
+        codeAnalysis.enable()
+        developmentMode.enable()
+
+        test {
+            junitJupiter.enable {
+                version("5.8.2")
+            }
+            prettyPrint(true)
+            showStandardStreams(true)
+            withIntegrationTests()
+            withFunctionalTests()
+        }
+
+        codeCoverage.enable()
+        benchmark.enable()
+        packaging.enable()
+
+        docker {
+            withJvmKill()
+        }
+
+        documentation.enable()
     }
 }
 

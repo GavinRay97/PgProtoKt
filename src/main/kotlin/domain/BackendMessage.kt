@@ -1,5 +1,7 @@
 package domain
 
+import utils.PgTypeTable
+
 sealed class BackendMessage(val id: Char) {
     class AuthenticationOk : BackendMessage('R')
     class AuthenticationKerberosV5 : BackendMessage('R')
@@ -53,14 +55,147 @@ sealed class BackendMessage(val id: Char) {
     }
 
     class RowDescription(val fields: List<Field>) : BackendMessage('T') {
-        class Field(
+        open class Field(
             val name: String,
-            val tableOid: Int,
-            val columnIdx: Int,
             val dataTypeOid: Int,
             val dataTypeSize: Int,
-            val dataTypeModifier: Int,
-            val format: PostgresDataFormat
+            val dataTypeModifier: Int = -1,
+            val tableOid: Int = 0,
+            val columnIdx: Int = 0,
+            val format: PostgresDataFormat = PostgresDataFormat.TEXT
         )
+
+        class TextField(
+            name: String,
+            tableOid: Int = 0,
+            columnIdx: Int = 0,
+            format: PostgresDataFormat = PostgresDataFormat.TEXT
+        ) : Field(name, dataTypeOid, dataTypeSize, dataTypeModifier, tableOid, columnIdx, format) {
+            companion object {
+                val dataTypeOid: Int = PgTypeTable.text.oid
+                val dataTypeSize: Int = PgTypeTable.text.byteLength
+                val dataTypeModifier: Int = -1
+            }
+        }
+
+        class CharField(
+            name: String,
+            tableOid: Int = 0,
+            columnIdx: Int = 0,
+            format: PostgresDataFormat = PostgresDataFormat.TEXT
+        ) : Field(name, dataTypeOid, dataTypeSize, dataTypeModifier, tableOid, columnIdx, format) {
+            companion object {
+                val dataTypeOid: Int = PgTypeTable.char.oid
+                val dataTypeSize: Int = PgTypeTable.char.byteLength
+                val dataTypeModifier: Int = -1
+            }
+        }
+
+        class DateField(
+            name: String,
+            tableOid: Int = 0,
+            columnIdx: Int = 0,
+            format: PostgresDataFormat = PostgresDataFormat.TEXT
+        ) : Field(name, dataTypeOid, dataTypeSize, dataTypeModifier, tableOid, columnIdx, format) {
+            companion object {
+                val dataTypeOid: Int = PgTypeTable.date.oid
+                val dataTypeSize: Int = PgTypeTable.date.byteLength
+                val dataTypeModifier: Int = -1
+            }
+        }
+
+        class TimeField(
+            name: String,
+            tableOid: Int = 0,
+            columnIdx: Int = 0,
+            format: PostgresDataFormat = PostgresDataFormat.TEXT
+        ) : Field(name, dataTypeOid, dataTypeSize, dataTypeModifier, tableOid, columnIdx, format) {
+            companion object {
+                val dataTypeOid: Int = PgTypeTable.time.oid
+                val dataTypeSize: Int = PgTypeTable.time.byteLength
+                val dataTypeModifier: Int = -1
+            }
+        }
+
+        class TimestampField(
+            name: String,
+            tableOid: Int = 0,
+            columnIdx: Int = 0,
+            format: PostgresDataFormat = PostgresDataFormat.TEXT
+        ) : Field(name, dataTypeOid, dataTypeSize, dataTypeModifier, tableOid, columnIdx, format) {
+            companion object {
+                val dataTypeOid: Int = PgTypeTable.timestamp.oid
+                val dataTypeSize: Int = PgTypeTable.timestamp.byteLength
+                val dataTypeModifier: Int = -1
+            }
+        }
+
+        class TimestamptzField(
+            name: String,
+            tableOid: Int = 0,
+            columnIdx: Int = 0,
+            format: PostgresDataFormat = PostgresDataFormat.TEXT
+        ) : Field(name, dataTypeOid, dataTypeSize, dataTypeModifier, tableOid, columnIdx, format) {
+            companion object {
+                val dataTypeOid: Int = PgTypeTable.timestamptz.oid
+                val dataTypeSize: Int = PgTypeTable.timestamptz.byteLength
+                val dataTypeModifier: Int = -1
+            }
+        }
+
+        class IntervalField(
+            name: String,
+            tableOid: Int = 0,
+            columnIdx: Int = 0,
+            format: PostgresDataFormat = PostgresDataFormat.TEXT
+        ) : Field(name, dataTypeOid, dataTypeSize, dataTypeModifier, tableOid, columnIdx, format) {
+            companion object {
+                val dataTypeOid: Int = PgTypeTable.interval.oid
+                val dataTypeSize: Int = PgTypeTable.interval.byteLength
+                val dataTypeModifier: Int = -1
+            }
+        }
+
+
+        class NumericField(
+            name: String,
+            tableOid: Int = 0,
+            columnIdx: Int = 0,
+            format: PostgresDataFormat = PostgresDataFormat.TEXT
+        ) : Field(name, dataTypeOid, dataTypeSize, dataTypeModifier, tableOid, columnIdx, format) {
+            companion object {
+                val dataTypeOid: Int = PgTypeTable.numeric.oid
+                val dataTypeSize: Int = PgTypeTable.numeric.byteLength
+                val dataTypeModifier: Int = -1
+            }
+        }
+
+        class Int4Field(
+            name: String,
+            tableOid: Int = 0,
+            columnIdx: Int = 0,
+            format: PostgresDataFormat = PostgresDataFormat.TEXT
+        ) : Field(name, dataTypeOid, dataTypeSize, dataTypeModifier, tableOid, columnIdx, format) {
+            companion object {
+                val dataTypeOid: Int = PgTypeTable.int4.oid
+                val dataTypeSize: Int = PgTypeTable.int4.byteLength
+                val dataTypeModifier: Int = -1
+            }
+        }
+
+        class BooleanField(
+            name: String,
+            tableOid: Int = 0,
+            columnIdx: Int = 0,
+            format: PostgresDataFormat = PostgresDataFormat.TEXT
+        ) : Field(name, dataTypeOid, dataTypeSize, dataTypeModifier, tableOid, columnIdx, format) {
+            companion object {
+                val dataTypeOid: Int = PgTypeTable.bool.oid
+                val dataTypeSize: Int = PgTypeTable.bool.byteLength
+                val dataTypeModifier: Int = -1
+            }
+        }
+
     }
+
 }
