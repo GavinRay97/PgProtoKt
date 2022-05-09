@@ -34,7 +34,7 @@ sealed class BackendMessage(val id: Char) {
     class CopyInResponse : BackendMessage('G')
     class CopyOutResponse : BackendMessage('H')
     class CopyBothResponse : BackendMessage('W')
-    class DataRow(val columns: List<Any>) : BackendMessage('D')
+    class DataRow(val columns: List<Any?>) : BackendMessage('D')
     class EmptyQueryResponse : BackendMessage('I')
     class ErrorResponse(val data: String) : BackendMessage('E')
     class FunctionCallResponse(val data: String) : BackendMessage('V')

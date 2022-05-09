@@ -1,3 +1,4 @@
+import calcite.CalciteProvider
 import codecs.PostgresBackendMessageEncoder
 import codecs.PostgresFrontendMessageDecoder
 import io.netty5.bootstrap.ServerBootstrap
@@ -747,6 +748,8 @@ object Netty5PostgresWireServerKt {
     fun main(args: Array<String>) {
         val bossGroup: EventLoopGroup = MultithreadEventLoopGroup(1, NioHandler.newFactory())
         val workerGroup: EventLoopGroup = MultithreadEventLoopGroup(NioHandler.newFactory())
+
+        println(CalciteProvider.rootSchema)
 
         try {
             val b = ServerBootstrap()

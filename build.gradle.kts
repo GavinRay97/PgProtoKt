@@ -14,6 +14,11 @@ repositories {
 dependencies {
     implementation("io.netty:netty5-all:5.0.0.Alpha1")
 
+    implementation(files("lib/jfr-analytics-1.0.0-SNAPSHOT.jar"))
+
+    implementation("org.apache.calcite:calcite-core:1.30.0")
+    implementation("org.apache.calcite:calcite-csv:1.30.0")
+
     implementation("org.apache.logging.log4j:log4j-api:2.17.2")
     implementation("org.apache.logging.log4j:log4j-core:2.17.2")
 
@@ -31,12 +36,6 @@ java {
 
 
 kradle {
-//    general {
-//        bootstrap.enable()
-//        git.enable()
-//        projectProperties.enable()
-//        buildProperties.enable()
-//    }
     jvm {
         kotlin {
             useCoroutines()

@@ -41,6 +41,7 @@ class PostgresFrontendMessageDecoder : MessageToMessageDecoder<ByteBuf>() {
             val type = FrontendMessageType.fromId(messageId)
             when (type) {
                 FrontendMessageType.Query -> {
+                    val length = msg.readInt()
                     val query = ByteBufUtils.readCString(msg)
                     logger.debug("Query: {}", query)
                     if (query != null) {

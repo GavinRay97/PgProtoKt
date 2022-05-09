@@ -85,13 +85,14 @@ object PostgresBackendMessageEncoder : MessageToByteEncoder<BackendMessage>() {
                 val rowBuffer = Unpooled.buffer()
                 // TODO: Currently only handles "TEXT" mode, not "BINARY"
                 msg.columns.forEach {
+                    println("Column: ${it}")
                     val colValueAsString = when (it) {
                         is String -> it
                         is Char -> it.toString()
                         is ByteArray -> it.toString(StandardCharsets.UTF_8)
                         is Number -> it.toString()
                         is Boolean -> if (it) "t" else "f"
-                        else -> throw IllegalArgumentException("Unsupported column type: ${it::class.java.name}")
+                        else -> throw IllegalArgumentException("Unsupported column type: ${it!!::class.java.name}")
                     }
                     val writerIndex = rowBuffer.writerIndex()
                     rowBuffer.writeInt(0)

@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets
 object ByteBufUtils {
     fun readCString(buffer: ByteBuf): String? {
         val bytes = ByteArray(buffer.bytesBefore(0.toByte()) + 1)
+        println("bytes: ${bytes.size}")
         if (bytes.isEmpty()) {
             return null
         }

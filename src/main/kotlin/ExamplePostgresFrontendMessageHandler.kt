@@ -1,9 +1,7 @@
+import calcite.CalciteProvider
 import domain.BackendMessage
 import domain.BackendMessage.CommandComplete.CommandType
 import domain.BackendMessage.ReadyForQuery.TransactionStatus
-import domain.BackendMessage.RowDescription.BooleanField
-import domain.BackendMessage.RowDescription.Int4Field
-import domain.BackendMessage.RowDescription.NumericField
 import domain.BackendMessage.RowDescription.TextField
 import domain.FrontendMessage
 import io.netty5.channel.ChannelHandlerContext
@@ -29,27 +27,35 @@ object ExamplePostgresFrontendMessageHandler : IPostgresFrontendMessageHandler {
     }
 
     override fun handleQuery(ctx: ChannelHandlerContext, msg: FrontendMessage.Query) {
-        logger.debug("Query message seen: {}", msg)
+        logger.debug("Query message seen: {}", msg.query)
 
-        // Fake "user" rows which have "id" and "email" columns
+        val sanitizedQuery = msg.query.removeSuffix(";")
+        val rows = mutableListOf<Map<String, Any?>>()
+
+        CalciteProvider.connection.createStatement().executeQuery(sanitizedQuery).use { rs ->
+            val md = rs.metaData
+            while (rs.next()) {
+                val row = mutableMapOf<String, Any?>()
+                for (i in 1..md.columnCount) {
+                    // HUGE NOTE!!!!
+                    // I am casting every value toString() here just to get this to work
+                    val asString = rs.getObject(i).toString()
+                    row[md.getColumnLabel(i)] = asString
+                }
+                rows.add(row)
+            }
+        }
+
+        println("Rows: $rows")
+
+        val columns = rows.first().keys.toList()
         val rd = BackendMessage.RowDescription(
-            fields = listOf(
-                Int4Field("id"),
-                TextField("email"),
-                NumericField("some_float"),
-                BooleanField("some_bool")
-            )
+            fields = columns.map { TextField(name = it) }
         )
 
         ctx.write(rd)
-
-        // Create 3 rows
-        for (i in 1..3) {
-            ctx.write(
-                BackendMessage.DataRow(
-                    listOf(i, "user$i@site.com", i * 1.23, i % 2 == 0)
-                )
-            )
+        for (row in rows) {
+            ctx.write(BackendMessage.DataRow(row.values.toList()))
         }
 
         ctx.write(BackendMessage.CommandComplete(affectedRows = 1, type = CommandType.SELECT))
